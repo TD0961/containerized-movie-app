@@ -1,8 +1,10 @@
 const express = require('express');
+const { PORT } = require('./config/env');
+const connectDB = require('./config/db');
 
+connectDB();
 const app = express();
 
-const PORT = process.env.PORT || 3000;
 
 app.get('/', (req, res) => {
   res.send('Hello from the backend!');
