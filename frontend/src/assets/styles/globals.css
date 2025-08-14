@@ -1,0 +1,20 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom Neon Utilities */
+@layer utilities {
+  .neon-text {
+    @apply text-primary drop-shadow-[0_0_5px_#00f0ff];
+  }
+  .neon-box {
+    @apply border border-primary shadow-[0_0_10px_#00f0ff];
+  }
+  .pulse-border {
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { border-color: theme('colors.primary'); }
+    50% { border-color: theme('colors.secondary'); }
+  }
+}
