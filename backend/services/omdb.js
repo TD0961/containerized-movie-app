@@ -12,12 +12,14 @@ const fetchMovie = async (title) => {
     }
 
     return {
-      title: response.data.Title,
-      rating: parseFloat(response.data.imdbRating) || 0,
-      year: response.data.Year,
-      poster: response.data.Poster || '',
-      plot: response.data.Plot,          
-      director: response.data.Director,
+    title: response.data.Title,
+    year: response.data.Year.match(/\d{4}/)?.[0] || 'N/A', // Extract year
+    rating: parseFloat(response.data.imdbRating) || 0,
+    poster: response.data.Poster.includes('http') 
+      ? response.data.Poster 
+      : '', // Handle "N/A" posters
+    plot: response.data.Plot || 'No description available',
+    director: response.data.Director || 'Unknown',
     };
   } catch (err) {
     console.error('[OMDb Service Error]:', err.message);

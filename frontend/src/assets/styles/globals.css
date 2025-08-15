@@ -1,8 +1,15 @@
+@import url('https://fonts.googleapis.com/css2?family=Jersey+15&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Custom Neon Utilities */
+@layer base {
+  html {
+    font-family: "Jersey 15", monospace;
+  }
+}
+
 @layer utilities {
   .neon-text {
     @apply text-primary drop-shadow-[0_0_5px_#00f0ff];

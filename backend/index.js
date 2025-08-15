@@ -4,10 +4,16 @@ const { PORT } = require('./config/env');
 const connectDB = require('./config/db');
 const movieRoutes = require('./routes/movieRoutes'); 
 const errorHandler = require('./middlewares/errorHandler');
+const cors = require('cors');
+
+
 
 connectDB();
 const app = express();
 app.use(express.json());
+app.use(cors({
+  origin: 'http://localhost:5173' // Your Vite frontend URL
+}));
 
 app.use('/api/movies', movieRoutes); 
 

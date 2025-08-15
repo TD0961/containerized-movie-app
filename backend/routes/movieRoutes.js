@@ -1,8 +1,15 @@
 const express = require('express');
-
-const { getMovie } = require('../controllers/movieController');
+const movieController = require('../controllers/movieController');
 
 const router = express.Router();
-router.get('/', getMovie);
 
-module.exports = router; 
+// Case 1: List all movies
+router.get('/', movieController.listMovies);
+
+// Case 2: Search movies
+router.get('/search', movieController.searchMovies);
+
+// Add new movie from OMDB
+router.post('/', movieController.addMovie);
+
+module.exports = router;
