@@ -2,11 +2,14 @@ const Movie = require('../models/Movie');
 const { fetchMovie } = require('../services/omdb');
 
 // CASE 1: List all movies (homepage)
+// In movieController.js, add logging:
 exports.listMovies = async (req, res) => {
   try {
     const movies = await Movie.find().sort({ createdAt: -1 }).limit(50);
-    res.json(movies);
+    console.log('Movies from DB:', movies); // Debug line
+    res.json(movies || []);
   } catch (err) {
+    console.error('DB Error:', err); // Debug line
     res.status(500).json({ error: 'Failed to fetch movies' });
   }
 };

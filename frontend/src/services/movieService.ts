@@ -1,4 +1,3 @@
-// src/services/movieService.ts
 import axios from 'axios';
 
 export interface Movie {
@@ -7,28 +6,25 @@ export interface Movie {
   year: string;
   rating: number;
   poster: string;
-  plot?: string;
   director?: string;
+  plot?: string;
 }
 
-export const fetchAllMovies = async (): Promise<Movie[]> => {
+export const fetchMovies = async (): Promise<Movie[]> => {
   try {
     const response = await axios.get('/api/movies');
-    // Ensure response is always an array
-    return Array.isArray(response.data) ? response.data : [response.data];
+    const data = response.data;
+    
+    if (!Array.isArray(data)) {
+      return []; // Return empty array instead of throwing error
+    }
+    
+    return data.map(movie => ({
+      ...movie,
+      _id: movie._id || movie.id
+    }));
   } catch (error) {
-    console.error('Error fetching movies:', error);
-    return []; // Return empty array on error
-  }
-};
-
-export const searchMovies = async (query: string): Promise<Movie[]> => {
-  try {
-    const response = await axios.get(`/api/movies/search?title=${encodeURIComponent(query)}`);
-    // Normalize response to array
-    return Array.isArray(response.data) ? response.data : [response.data];
-  } catch (error) {
-    console.error('Error searching movies:', error);
-    return [];
+    console.error('Fetch error:', error);
+    return []; // Fallback to empty array
   }
 };

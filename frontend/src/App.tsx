@@ -1,11 +1,8 @@
-// src/App.tsx
-import Header from './components/layout/Header';
 import MovieGrid from './components/movie/MovieGrid';
 
 export default function App() {
   return (
-    <div className="min-h-screen bg-background">
-      <Header />
+    <div className="min-h-screen bg-gray-900"> {/* Changed to consistent bg */}
       <MovieGrid />
     </div>
   );

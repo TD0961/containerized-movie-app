@@ -1,75 +1,84 @@
 import { useEffect, useState } from 'react';
-import type { Movie } from '../../services/movieService';
-import { fetchAllMovies, searchMovies } from '../../services/movieService';
+import { fetchMovies } from '../../services/movieService';
 import MovieCard from './MovieCard';
+import type { Movie } from '../../services/movieService';
 
 export default function MovieGrid() {
   const [movies, setMovies] = useState<Movie[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     const loadMovies = async () => {
       try {
-        setLoading(true);
-        const data = searchQuery ? await searchMovies(searchQuery) : await fetchAllMovies();
+        const data = await fetchMovies();
         setMovies(data);
         setError(null);
       } catch (err) {
-        setError('Failed to load movies');
-        setMovies([]);
+        const message = err instanceof Error ? err.message : 'Failed to load movies';
+        setError(message);
+        console.error('Error:', err);
       } finally {
         setLoading(false);
       }
     };
+    
     loadMovies();
-  }, [searchQuery]);
+  }, []);
 
+  // Loading state
   if (loading) {
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 p-8">
-        {[...Array(6)].map((_, i) => (
-          <div key={i} className="w-[300px] h-[450px] bg-background/50 animate-pulse rounded-lg" />
-        ))}
+      <div className="flex items-center justify-center h-screen">
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto"></div>
+          <p className="mt-4 text-white">Loading movies...</p>
+        </div>
       </div>
     );
   }
 
+  // Error state
   if (error) {
     return (
-      <div className="text-center p-8 text-red-500">
-        {error}
+      <div className="flex items-center justify-center h-screen">
+        <div className="text-center p-8 max-w-md">
+          <p className="text-red-500 mb-4">{error}</p>
+          <button 
+            onClick={() => window.location.reload()}
+            className="px-4 py-2 bg-primary rounded text-white hover:bg-primary-dark transition"
+          >
+            Retry
+          </button>
+        </div>
       </div>
     );
   }
 
+  // Success state
   return (
-    <div className="flex flex-col items-center">
-      {/* Search Input */}
-      <div className="w-full max-w-md p-4">
-        <input
-          type="text"
-          placeholder="Search movies..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full bg-background/50 border border-primary rounded-full py-2 px-4 
-                     text-text focus:outline-none focus:ring-2 focus:ring-primary"
-        />
+    <div className="min-h-screen bg-gray-900">
+      <div className="text-center py-8">
+        <h1 className="text-4xl font-bold text-primary">CINEMACH</h1>
       </div>
-
-      {/* Movie Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 p-8">
-        {movies.length > 0 ? (
-          movies.map((movie) => (
+      
+      {movies.length === 0 ? (
+        <div className="text-center py-12">
+          <p className="text-white mb-4">No movies found in database</p>
+          <button 
+            onClick={() => window.location.reload()}
+            className="px-4 py-2 bg-primary rounded text-white hover:bg-primary-dark transition"
+          >
+            Refresh
+          </button>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 p-8 justify-items-center">
+          {movies.map(movie => (
             <MovieCard key={movie._id} movie={movie} />
-          ))
-        ) : (
-          <div className="col-span-3 text-center text-text py-12">
-            {searchQuery ? 'No matching movies found' : 'No movies available'}
-          </div>
-        )}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
