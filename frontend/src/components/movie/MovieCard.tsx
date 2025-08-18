@@ -1,29 +1,37 @@
-import { useState } from 'react';
-import type { Movie } from '../../services/movieService';
+import { useState } from "react";
+import type { Movie } from "../../services/movieService";
 
 export default function MovieCard({ movie }: { movie: Movie }) {
-  const [imgSrc, setImgSrc] = useState(movie.poster);
-  const [loaded, setLoaded] = useState(false);
+  const [imgError, setImgError] = useState(false);
+
+  const hasValidPoster =
+    movie.poster &&
+    movie.poster !== "N/A" &&
+    movie.poster.startsWith("http");
 
   return (
-    <div className="w-[300px] h-[450px] rounded-lg overflow-hidden shadow-lg bg-gray-800">
-      {/* Poster Image Container */}
-      <div className="relative w-full h-[80%]">
-        {!loaded && (
-          <div className="absolute inset-0 bg-gray-700 animate-pulse"></div>
+    <div className="w-[300px] h-[450px] rounded-lg overflow-hidden shadow-lg bg-gray-800 hover:scale-105 transition-transform duration-300">
+      {/* Poster or fallback */}
+      <div className="relative w-full h-[80%] bg-gray-700 flex items-center justify-center">
+        {hasValidPoster && !imgError ? (
+          <img
+            src={movie.poster}
+            alt={`${movie.title} poster`}
+            className="w-full h-full object-cover"
+            onError={() => setImgError(true)}
+          />
+        ) : (
+          <div className="p-4 text-center">
+            <h3 className="text-white text-xl font-bold break-words">
+              {movie.title}
+            </h3>
+            <p className="text-gray-300 mt-2 text-sm">
+              {movie.year} • {movie.rating}/10
+            </p>
+          </div>
         )}
-        <img
-          src={imgSrc}
-          alt={`${movie.title} poster`}
-          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${loaded ? 'opacity-100' : 'opacity-0'}`}
-          onLoad={() => setLoaded(true)}
-          onError={() => {
-            console.warn(`Failed to load poster: ${movie.poster}`);
-            setImgSrc('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="300" height="360" viewBox="0 0 300 360" fill="%232d3748"><rect width="300" height="360"/><text x="150" y="180" font-family="sans-serif" font-size="16" fill="white" text-anchor="middle">Poster Not Available</text></svg>');
-          }}
-        />
       </div>
-      
+
       {/* Movie Info */}
       <div className="p-4 h-[20%] flex flex-col justify-between">
         <h3 className="text-white font-bold truncate">{movie.title}</h3>

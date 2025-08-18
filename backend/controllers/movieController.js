@@ -6,10 +6,9 @@ const { fetchMovie } = require('../services/omdb');
 exports.listMovies = async (req, res) => {
   try {
     const movies = await Movie.find().sort({ createdAt: -1 }).limit(50);
-    console.log('Movies from DB:', movies); // Debug line
     res.json(movies || []);
   } catch (err) {
-    console.error('DB Error:', err); // Debug line
+    console.error('DB Error:', err);
     res.status(500).json({ error: 'Failed to fetch movies' });
   }
 };
