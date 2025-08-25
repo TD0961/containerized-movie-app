@@ -4,7 +4,7 @@ const { fetchMovie } = require('../services/omdb');
 // CASE 1: List all movies (homepage)
 // In movieController.js, add logging:
 exports.listMovies = async (req, res) => {
-  try {
+  try { 
     const movies = await Movie.find().sort({ createdAt: -1 }).limit(50);
     res.json(movies || []);
   } catch (err) {
