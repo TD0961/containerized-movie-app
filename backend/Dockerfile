@@ -16,11 +16,11 @@ RUN addgroup -S app && adduser -S -G app app \
 USER app
 
 ENV NODE_ENV=production
-ENV PORT=5000
+ENV PORT=3000
 
-EXPOSE 5000
+EXPOSE 3000
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
-  CMD curl -f http://localhost:5000/health || exit 1
+  CMD curl -f http://localhost:3000/health || exit 1
 
 CMD ["node", "index.js"]

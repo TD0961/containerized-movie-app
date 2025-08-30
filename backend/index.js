@@ -51,7 +51,7 @@ start();
 process.on('SIGINT', shutdown);
 process.on('SIGTERM', shutdown);
 
-function shutdown() {
+function shutdown() { 
   console.log("Shutting down gracefully...");
   if (server) {
     server.close(() => {

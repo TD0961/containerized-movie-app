@@ -1,0 +1,22 @@
+version: "3.9"
+
+services:
+  backend:
+    build: ./backend
+    container_name: mern-backend
+    ports:
+      - "${BACKEND_HOST_PORT}:${BACKEND_PORT}"
+    env_file:
+      - ./backend/.env   # secrets live here
+    environment:
+      - PORT=${BACKEND_PORT}
+    restart: unless-stopped
+
+  frontend:
+    build: ./frontend
+    container_name: mern-frontend
+    ports:
+      - "${FRONTEND_HOST_PORT}:${FRONTEND_PORT}"
+    depends_on:
+      - backend
+    restart: unless-stopped
