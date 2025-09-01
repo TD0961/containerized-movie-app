@@ -1,22 +1,28 @@
-version: "3.9"
-
 services:
   backend:
     build: ./backend
     container_name: mern-backend
     ports:
-      - "${BACKEND_HOST_PORT}:${BACKEND_PORT}"
+      - "${BACKEND_HOST_PORT:-4000}:${BACKEND_PORT:-3000}"
     env_file:
-      - ./backend/.env   # secrets live here
+      - ./backend/.env
     environment:
-      - PORT=${BACKEND_PORT}
+      - PORT=${BACKEND_PORT:-3000}
+      - NODE_ENV=production
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
 
   frontend:
     build: ./frontend
     container_name: mern-frontend
     ports:
-      - "${FRONTEND_HOST_PORT}:${FRONTEND_PORT}"
+      - "${FRONTEND_HOST_PORT:-5180}:80"
     depends_on:
       - backend
     restart: unless-stopped
+
