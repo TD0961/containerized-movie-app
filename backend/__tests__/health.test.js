@@ -4,15 +4,15 @@ const express = require('express');
 // Build a chainable mock for Mongoose find().sort().limit()
 const chainableFindMock = () => ({
   sort: jest.fn().mockReturnValue({
-    limit: jest.fn().mockResolvedValue([])
-  })
+    limit: jest.fn().mockResolvedValue([]),
+  }),
 });
 
 // Mock the Movie model to avoid real DB calls
 jest.mock('../models/Movie', () => ({
   find: jest.fn().mockImplementation(chainableFindMock),
   findOne: jest.fn().mockResolvedValue(null),
-  create: jest.fn().mockResolvedValue({ _id: '1', title: 'Mock Movie' })
+  create: jest.fn().mockResolvedValue({ _id: '1', title: 'Mock Movie' }),
 }));
 
 // Mock OMDB service to avoid external HTTP
@@ -21,8 +21,8 @@ jest.mock('../services/omdb', () => ({
     title: 'Mock Movie',
     year: '2000',
     rating: 8.0,
-    poster: 'N/A'
-  })
+    poster: 'N/A',
+  }),
 }));
 
 const movieRoutes = require('../routes/movieRoutes');
