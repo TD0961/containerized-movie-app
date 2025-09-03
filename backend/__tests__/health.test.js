@@ -1,9 +1,16 @@
 const request = require('supertest');
 const express = require('express');
 
+// Build a chainable mock for Mongoose find().sort().limit()
+const chainableFindMock = () => ({
+  sort: jest.fn().mockReturnValue({
+    limit: jest.fn().mockResolvedValue([])
+  })
+});
+
 // Mock the Movie model to avoid real DB calls
 jest.mock('../models/Movie', () => ({
-  find: jest.fn().mockResolvedValue([]),
+  find: jest.fn().mockImplementation(chainableFindMock),
   findOne: jest.fn().mockResolvedValue(null),
   create: jest.fn().mockResolvedValue({ _id: '1', title: 'Mock Movie' })
 }));
