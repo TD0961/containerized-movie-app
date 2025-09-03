@@ -12,7 +12,9 @@ module.exports = {
     'no-unused-vars': ['warn', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
     'no-console': 'off',
     'n/no-missing-require': 'off',
-    'import/no-unresolved': 'off'
+    'import/no-unresolved': 'off',
+    'n/no-unpublished-require': 'off',
+    'n/no-process-exit': 'off'
   },
   ignorePatterns: ['node_modules/', 'coverage/']
 };
