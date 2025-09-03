@@ -16,7 +16,7 @@ export default function MovieGrid() {
       try {
         const data = await fetchMovies();
         setMovies(data);
-      } catch (err) {
+      } catch {
         setError("Failed to load movies");
       } finally {
         setLoading(false);
