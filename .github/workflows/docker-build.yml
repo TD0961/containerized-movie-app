@@ -47,6 +47,7 @@ jobs:
             -e CLIENT_ORIGIN=http://localhost:80 \
             movie-app-backend:latest
 
+
       - name: Wait for Backend
         run: |
           for i in {1..30}; do
