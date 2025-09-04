@@ -1,0 +1,51 @@
+name: Docker Build & Test
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Backend Image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./backend
+          push: false
+          tags: movie-app-backend:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Build Frontend Image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./frontend
+          push: false
+          tags: movie-app-frontend:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Start Backend Container
+        run: |
+          docker run -d --name test-backend -p 3000:3000 movie-app-backend:latest
+          sleep 10
+
+      - name: Smoke Test Backend
+        run: |
+          curl -f http://localhost:3000/health || exit 1
+
+      - name: Cleanup
+        if: always()
+        run: |
+          docker stop test-backend || true
+          docker rm test-backend || true
