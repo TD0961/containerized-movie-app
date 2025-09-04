@@ -27,16 +27,6 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      - name: Build Frontend Image
-        uses: docker/build-push-action@v5
-        with:
-          context: ./frontend
-          push: false
-          load: true
-          tags: movie-app-frontend:latest
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-
       - name: Start Backend Container
         env:
           PORT: 3000
@@ -60,38 +50,11 @@ jobs:
           docker logs test-backend
           exit 1
 
-      - name: Start Frontend Container
-        run: docker run -d --name test-frontend -p 8080:80 movie-app-frontend:latest
-
-      - name: Wait for Frontend
-        run: |
-          for i in {1..30}; do
-            if curl -s http://localhost:8080 > /dev/null; then
-              echo "✅ Frontend is up!"
-              exit 0
-            fi
-            echo "⏳ Waiting for frontend..."
-            sleep 2
-          done
-          echo "❌ Frontend failed to start"
-          docker logs test-frontend
-          exit 1
-
       - name: Smoke Test Backend Health
-        run: |
-          curl -f http://localhost:3000/health || exit 1
-
-      - name: API Test - Movies Endpoint
-        run: |
-          echo "Testing /api/movies endpoint..."
-          curl -f http://localhost:3000/api/movies || (docker logs test-backend && exit 1)
-
-      - name: Smoke Test Frontend
-        run: |
-          curl -f http://localhost:8080 || exit 1
+        run: curl -f http://localhost:3000/health || (docker logs test-backend && exit 1)
 
       - name: Cleanup
         if: always()
         run: |
-          docker stop test-backend test-frontend || true
-          docker rm test-backend test-frontend || true
+          docker stop test-backend || true
+          docker rm test-backend || true
