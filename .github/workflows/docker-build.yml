@@ -41,7 +41,7 @@ jobs:
         env:
           PORT: 3000
           MONGODB_URI: ${{ secrets.MONGODB_URI }}
-          CLIENT_ORIGIN: http://localhost:80
+          CLIENT_ORIGIN: http://localhost:8080
           OMDB_API_KEY: ${{ secrets.OMDB_API_KEY }}
         run: docker run -d --name test-backend -p 3000:3000 -e PORT -e MONGODB_URI -e CLIENT_ORIGIN -e OMDB_API_KEY movie-app-backend:latest
 
@@ -61,7 +61,21 @@ jobs:
           exit 1
 
       - name: Start Frontend Container
-        run: docker run -d --name test-frontend -p 80:80 movie-app-frontend:latest && sleep 5
+        run: docker run -d --name test-frontend -p 8080:80 movie-app-frontend:latest
+
+      - name: Wait for Frontend
+        run: |
+          for i in {1..30}; do
+            if curl -s http://localhost:8080 > /dev/null; then
+              echo "✅ Frontend is up!"
+              exit 0
+            fi
+            echo "⏳ Waiting for frontend..."
+            sleep 2
+          done
+          echo "❌ Frontend failed to start"
+          docker logs test-frontend
+          exit 1
 
       - name: Smoke Test Backend Health
         run: |
@@ -74,7 +88,7 @@ jobs:
 
       - name: Smoke Test Frontend
         run: |
-          curl -f http://localhost:80 || exit 1
+          curl -f http://localhost:8080 || exit 1
 
       - name: Cleanup
         if: always()
