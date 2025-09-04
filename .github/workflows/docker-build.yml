@@ -39,12 +39,34 @@ jobs:
 
       - name: Start Backend Container
         run: |
-          docker run -d --name test-backend -p 3000:3000 movie-app-backend:latest
-          sleep 10
+          docker run -d \
+            --name test-backend \
+            -p 3000:3000 \
+            -e PORT=3000 \
+            -e MONGO_URI=${{ secrets.MONGO_URI }} \
+            -e CLIENT_ORIGIN=http://localhost:80 \
+            movie-app-backend:latest
+
+      - name: Wait for Backend
+        run: |
+          for i in {1..30}; do
+            if curl -s http://localhost:3000/health > /dev/null; then
+              echo "✅ Backend is up!"
+              exit 0
+            fi
+            echo "⏳ Waiting for backend..."
+            sleep 2
+          done
+          echo "❌ Backend failed to start"
+          docker logs test-backend
+          exit 1
 
       - name: Start Frontend Container
         run: |
-          docker run -d --name test-frontend -p 80:80 movie-app-frontend:latest
+          docker run -d \
+            --name test-frontend \
+            -p 80:80 \
+            movie-app-frontend:latest
           sleep 5
 
       - name: Smoke Test Backend
@@ -59,4 +81,4 @@ jobs:
         if: always()
         run: |
           docker stop test-backend test-frontend || true
-          docker rm test-backend test-frontend || trues
+          docker rm test-backend test-frontend || true
