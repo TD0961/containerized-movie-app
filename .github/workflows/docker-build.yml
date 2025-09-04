@@ -59,4 +59,4 @@ jobs:
         if: always()
         run: |
           docker stop test-backend test-frontend || true
-          docker rm test-backend test-frontend || true
+          docker rm test-backend test-frontend || trues
